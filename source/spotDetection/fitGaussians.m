@@ -422,7 +422,11 @@ for k = 1:numberOfSpots.NumObjects
                 Q = 2*abs(pi*sfitTemp.heightEstimate*sfitTemp.widthEstimate^2);
                 spotStructure.l(counter) = l;
                 dispStructure.w(counter) = sfitTemp.widthEstimate*sqrt(2);
-                dispStructure.h(counter) = sfitTemp.heightEstimate/65535;
+                dispStructure.h(counter) = sfitTemp.heightEstimate; %/65535;
+                spotStructure.w(counter) = sfitTemp.widthEstimate*sqrt(2); % Added width and height to spotStructure
+                spotStructure.h(counter) = sfitTemp.heightEstimate;%/65535; %  divided by 2^16, 16bit rescale?
+                spotStructure.magnitude(counter) = Q;
+                spotStructure.b(counter)=sfitTemp.backgroundRawImage;
                 spotStructure.d(counter) = d;
                 spotStructure.x(counter) = xModelValue;
                 spotStructure.y(counter) = yModelValue;
@@ -462,7 +466,7 @@ for k = 1:numberOfSpots.NumObjects
                         cellData = getextradata(cellData);
                     end
                     [l,d] = projectToMesh(cellData.box(1)-1+posX(jj),...
-                        cellData.box(2)-1+posY(jj),cellData.mesh,cellData.steplength); %#ok<AGROW>
+                        cellData.box(2)-1+posY(jj),cellData.mesh,cellData.steplength);
                     
                     for kk = 1:size(cellData.mesh,1)-1
                         pixelPeakX = [cellData.mesh(kk,[1 3]) cellData.mesh(kk+1,[3 1])] - cellData.box(1)+1;
@@ -474,7 +478,11 @@ for k = 1:numberOfSpots.NumObjects
                     end
                     spotStructure.l(counter) = l;
                     dispStructure.w(counter) = w(jj)*sqrt(2);
-                    dispStructure.h(counter) = h(jj)/65535;
+                    dispStructure.h(counter) = h(jj); %/65535;
+                    spotStructure.w(counter) = w(jj)*sqrt(2); % Added width and height to spotStructure
+                    spotStructure.h(counter) = h(jj);%/65535; %  divided by 2^16, 16bit rescale?
+                    spotStructure.magnitude(counter) = Q(jj);
+                    spotStructure.b(counter)=b(jj);
                     spotStructure.d(counter) = d;
                     spotStructure.x(counter) = xModelValue;
                     spotStructure.y(counter) = yModelValue;
@@ -529,7 +537,11 @@ for k = 1:numberOfSpots.NumObjects
                     end
                     spotStructure.l(counter) = l;
                     dispStructure.w(counter) = w(jj)*sqrt(2);
-                    dispStructure.h(counter) = h(jj)/65535;
+                    dispStructure.h(counter) = h(jj); %/65535;
+                    spotStructure.w(counter) = w(jj)*sqrt(2); % Added width and height to spotStructure
+                    spotStructure.h(counter) = h(jj);%/65535; %  divided by 2^16, 16bit rescale?
+                    spotStructure.magnitude(counter) = Q(jj);
+                    spotStructure.b(counter)=b(jj);
                     spotStructure.d(counter) = d;
                     spotStructure.x(counter) = xModelValue;
                     spotStructure.y(counter) = yModelValue;
@@ -572,7 +584,7 @@ for k = 1:numberOfSpots.NumObjects
                         cellData = getextradata(cellData);
                     end
                     [l,d] = projectToMesh(cellData.box(1)-1+posX(jj),...
-                        cellData.box(2)-1+posY(jj),cellData.mesh,cellData.steplength); %#ok<AGROW>
+                        cellData.box(2)-1+posY(jj),cellData.mesh,cellData.steplength);
                     for kk = 1:size(cellData.mesh,1)-1
                         pixelPeakX = [cellData.mesh(kk,[1 3]) cellData.mesh(kk+1,[3 1])] - cellData.box(1)+1;
                         pixelPeakY = [cellData.mesh(kk,[2 4]) cellData.mesh(kk+1,[4 2])] - cellData.box(2)+1;
@@ -583,7 +595,11 @@ for k = 1:numberOfSpots.NumObjects
                     end
                     spotStructure.l(counter) = l;
                     dispStructure.w(counter) = w(jj)*sqrt(2);
-                    dispStructure.h(counter) = h(jj)/65535;
+                    dispStructure.h(counter) = h(jj); %/65535; %  divided by 2^16, 16bit rescale?
+                    spotStructure.w(counter) = w(jj)*sqrt(2); % Added width and height to spotStructure
+                    spotStructure.h(counter) = h(jj);%/65535; %  divided by 2^16, 16bit rescale?
+                    spotStructure.magnitude(counter) = Q(jj);
+                    spotStructure.b(counter)=b(jj);
                     spotStructure.d(counter) = d;
                     spotStructure.x(counter) = xModelValue;
                     spotStructure.y(counter) = yModelValue;
