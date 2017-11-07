@@ -37,7 +37,7 @@ pixelNumbers = cellfun(@numel,numberOfSpots.PixelIdxList); % Counts nr of pixels
 indexToGoodSpots = pixelNumbers > 2; % remove spots with less than two pixels
 meanIndex = mean(pixelNumbers(indexToGoodSpots));
 pixelNumMeanStd = meanIndex+std(pixelNumbers(indexToGoodSpots))/2;
-backgroundRawImage = mean(mean(rawImage)); % TODO: use from input instead
+%backgroundRawImage = mean(mean(rawImage)); % Use from input instead
 
 %% Start loop through spots
 for k = 1:numberOfSpots.NumObjects
