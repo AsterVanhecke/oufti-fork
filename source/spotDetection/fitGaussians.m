@@ -50,39 +50,30 @@ for k = 1:numberOfSpots.NumObjects
     end
     try
         tempNewRawImage = k == tempRawImage; % Get mask with pixels in spot k.
-        tempNewRawImage = im2uint16(tempNewRawImage.*im2double(rawImage)); % Acquire raw pixel values
+        tempNewRawImage = tempNewRawImage.*im2double(rawImage); % Acquire raw pixel values
         indexToSpots = numberOfSpots.PixelIdxList{k}; % Acquire pixel indices
         % Get first guess for location of maximum
-        % if spot has more pixels than most spots (mean+std) or is only spot
-        if  pixelNumbers(k) > pixelNumMeanStd || numberOfSpots.NumObjects == 1
-            [~,id] = max(rawImage(indexToSpots)); % find pixel in spot with highest value.
-            peakValueOfSpots = indexToSpots(id);
-            % peakValueOfSpots is the pixel index (linear indexing), the
-            % following lines convert it to row/column.
-            rowPosition = (rem(peakValueOfSpots-1,rows)+1);
-            columnPosition = ceil(peakValueOfSpots./rows);
-            % Estimate position of peak with subpixel precision
-            positionXY = positionEstimate(rawImage(rowPosition-1:rowPosition+1,columnPosition-1:columnPosition+1)) + [columnPosition-1,rowPosition-1] -1;
-            % Convert to row/column
-            rowPosition = positionXY(2);
-            columnPosition = positionXY(1);
+        [~,id] = max(rawImage(indexToSpots)); % find pixel in spot with highest value.
+        peakValueOfSpots = indexToSpots(id);
+        % peakValueOfSpots is the pixel index (linear indexing), the
+        % following lines convert it to row/column.
+        rowPosition = (rem(peakValueOfSpots-1,rows)+1);
+        columnPosition = ceil(peakValueOfSpots./rows);
+        % Estimate position of peak with subpixel precision
+        positionXY = positionEstimate(rawImage(rowPosition-1:rowPosition+1,columnPosition-1:columnPosition+1)) + [columnPosition-1,rowPosition-1] -1;
+        % Convert to row/column
+        rowPosition = positionXY(2);
+        columnPosition = positionXY(1);
+        if  pixelNumbers(k) > pixelNumMeanStd || numberOfSpots.NumObjects == 1 % if spot has more pixels than most spots (mean+std) or is only spot
             % Convolute with ones(5), to expand mask
             tempMask = conv2(double(tempNewRawImage),ones(5),'same');
             tempMask = logical(tempMask);
-            indexToMask = find(tempMask ==1);
-            tempNewRawImage =rawImage(tempMask); % mask raw Image with expanded mask.
         else
-            [~,id] = max(newRawImage(indexToSpots));
-            peakValueOfSpots = indexToSpots(id);
-            rowPosition = (rem(peakValueOfSpots-1,rows)+1);
-            columnPosition = ceil(peakValueOfSpots./rows);
-            positionXY = positionEstimate(rawImage(rowPosition-1:rowPosition+1,columnPosition-1:columnPosition+1)) + [columnPosition-1,rowPosition-1] -1;
-            rowPosition = positionXY(2);
-            columnPosition = positionXY(1);
-            tempMask = ((newRows-columnPosition).^2 + (newColumns-rowPosition).^2).^(1/2) <= maxRadius;
-            indexToMask = find(tempMask ==1);
-            tempNewRawImage =rawImage(tempMask);
+            tempMask = ((newRows-columnPosition).^2 + (newColumns-rowPosition).^2).^(1/2) <= maxRadius;            
         end
+        indexToMask = find(tempMask ==1);
+        tempNewRawImage =rawImage(tempMask); % mask raw Image with expanded mask.
+        
         tempNewRawImage1 = uint16(tempMask.*double(rawImage));
         [yy,xx] = find(tempNewRawImage1); % Get row and columns for pixels in tempNewRawImage1
         points = [xx yy];
