@@ -32,17 +32,12 @@ dispStructure.w                            = [];
 dispStructure.h                            = [];
 
 [rows,columns] = size(rawImage);
-[newRows, newColumns] = meshgrid(1:columns,1:rows);
 
 %% Identify spots to fit
 counter = 0;
 tempRawImage = bwlabel(newRawImage);
 pixelNumbers = cellfun(@numel,numberOfSpots.PixelIdxList); % Counts nr of pixels in each spot
-indexToGoodSpots = pixelNumbers > 2; % remove spots with less than two pixels
-meanIndex = mean(pixelNumbers(indexToGoodSpots));
-pixelNumMeanStd = meanIndex+std(pixelNumbers(indexToGoodSpots))/2;
-%backgroundRawImage = mean(mean(rawImage)); % Use from input instead
-
+SE=strel('disk',4);
 %% Start loop through spots
 for k = 1:numberOfSpots.NumObjects
     if numel(numberOfSpots.PixelIdxList{k}) < params.minRegionSize
@@ -64,16 +59,10 @@ for k = 1:numberOfSpots.NumObjects
         % Convert to row/column
         rowPosition = positionXY(2);
         columnPosition = positionXY(1);
-        if  pixelNumbers(k) > pixelNumMeanStd || numberOfSpots.NumObjects == 1 % if spot has more pixels than most spots (mean+std) or is only spot
-            % Convolute with ones(5), to expand mask
-            tempMask = conv2(double(tempNewRawImage),ones(5),'same');
-            tempMask = logical(tempMask);
-        else
-            tempMask = ((newRows-columnPosition).^2 + (newColumns-rowPosition).^2).^(1/2) <= maxRadius;            
-        end
-        indexToMask = find(tempMask ==1);
+        % Dilate mask
+        tempMask = imdilate(tempNewRawImage>1,SE);
+        indexToMask = find(tempMask);
         tempNewRawImage =rawImage(tempMask); % mask raw Image with expanded mask.
-        
         tempNewRawImage1 = uint16(tempMask.*double(rawImage));
         [yy,xx] = find(tempNewRawImage1); % Get row and columns for pixels in tempNewRawImage1
         points = [xx yy];
@@ -82,11 +71,11 @@ for k = 1:numberOfSpots.NumObjects
         % for each pixel in the spot, calculate the distance to the other
         % pixels and return the largest distance, to estimate max Width.
         [d,~]  = pdist2(points,points,'euclidean','largest',1);
-        maxWidthEstimate = ceil(max(d));
+        maxWidthEstimate = ceil(max(d)); % This should probably be lower.
         indexPeakDistanceXY = indexToMask;
         % redo position estimate, on window around new rowPosition and
         % columnPosition (from previous position estimate)
-        positionXY = positionEstimate(rawImage(rowPosition-1:rowPosition+1,columnPosition-1:columnPosition+1)) + [columnPosition-1,rowPosition-1] -1;
+        positionXY = positionEstimate(rawImage( round(rowPosition-1:rowPosition+1),round(columnPosition-1:columnPosition+1)) ) + [columnPosition-1,rowPosition-1] -1;
         % make 3 copies of position for the fit.
         positionX = positionXY(1);
         positionY = positionXY(2);
@@ -97,6 +86,7 @@ for k = 1:numberOfSpots.NumObjects
         positionX3 = positionX;
         positionY3 = positionY;
         
+        % If the initial guess for the position is outside the cell, skip this spot.
         if ~inpolygon(positionX,positionY,...
                 dilatedCellContour(:,1),dilatedCellContour(:,2))
             continue;
@@ -116,6 +106,10 @@ for k = 1:numberOfSpots.NumObjects
         widthEstimate2 = widthEstimate;
         heightEstimate3 = heightEstimate;
         widthEstimate3  = widthEstimate;
+        
+        % backgroundRawImage
+        minBackgroundEstimate=min(rawImage(:));
+        maxBackgroundEstimate=mean(rawImage(:))+std(rawImage(:));
     catch
         continue;
     end
@@ -123,22 +117,22 @@ for k = 1:numberOfSpots.NumObjects
     %% Create fitoptions
     % Initialize fit options for multiple 2D-Gauss fits.
     % gauss2dFitOptionsN corresponds to fit with N Gaussians.
-    gauss2dFitOptions1 = fitoptions('Method','NonlinearLeastSquares','Algorithm','Levenberg-Marquardt',...
-        'Lower',[0,0,0],...
-        'Upper',[Inf,Inf,maxWidthEstimate],'MaxIter', 600,...
+    gauss2dFitOptions1 = fitoptions('Method','NonlinearLeastSquares','Algorithm','Trust-Region',...
+        'Lower',[minBackgroundEstimate,0,0],...
+        'Upper',[maxBackgroundEstimate,Inf,maxWidthEstimate],'MaxIter', 600,...
         'Startpoint',[backgroundRawImage,heightEstimate,...
         widthEstimate1,positionX,positionY]);
-    gauss2dFitOptions2 = fitoptions('Method','NonlinearLeastSquares','Algorithm','Levenberg-Marquardt',...
-        'Lower',[0,0,0,-Inf,-Inf,0,0,-Inf,-Inf],...
-        'Upper',[Inf,Inf,maxWidthEstimate,Inf,Inf,Inf,Inf,maxWidthEstimate,Inf,Inf],'MaxIter',600,...
+    gauss2dFitOptions2 = fitoptions('Method','NonlinearLeastSquares','Algorithm','Trust-Region',...
+        'Lower',[minBackgroundEstimate,0,0,-Inf,-Inf,0,0,-Inf,-Inf],...
+        'Upper',[maxBackgroundEstimate,Inf,maxWidthEstimate,Inf,Inf,Inf,maxWidthEstimate,Inf,Inf],'MaxIter',600,...
         'Startpoint',[backgroundRawImage,heightEstimate,...
         widthEstimate,positionX,positionY,...
         heightEstimate1,...
         widthEstimate1,positionX1,positionY1]);
     
-    gauss2dFitOptions3 = fitoptions('Method','NonlinearLeastSquares','Algorithm','Levenberg-Marquardt',...
-        'Lower',[0,0,0,-Inf,-Inf,0,0,-Inf,-Inf,0,0,-Inf,-Inf],...
-        'Upper',[Inf,Inf,maxWidthEstimate,Inf,Inf,Inf,maxWidthEstimate,Inf,Inf,...
+    gauss2dFitOptions3 = fitoptions('Method','NonlinearLeastSquares','Algorithm','Trust-Region',...
+        'Lower',[minBackgroundEstimate,0,0,-Inf,-Inf,0,0,-Inf,-Inf,0,0,-Inf,-Inf],...
+        'Upper',[maxBackgroundEstimate,Inf,maxWidthEstimate,Inf,Inf,Inf,maxWidthEstimate,Inf,Inf,...
         Inf,maxWidthEstimate,Inf,Inf],'MaxIter',600,...
         'Startpoint',[backgroundRawImage,heightEstimate,...
         widthEstimate,positionX,positionY,...
@@ -147,9 +141,9 @@ for k = 1:numberOfSpots.NumObjects
         heightEstimate2,...
         widthEstimate2,positionX2,positionY2]);
     
-    gauss2dFitOptions4 = fitoptions('Method','NonlinearLeastSquares','Algorithm','Levenberg-Marquardt',...
-        'Lower',[0,0,0,-Inf,-Inf,0,0,-Inf,-Inf,0,0,-Inf,-Inf,0,0,-Inf,-Inf],...
-        'Upper',[Inf,Inf,maxWidthEstimate,Inf,Inf,Inf,maxWidthEstimate,Inf,Inf,...
+    gauss2dFitOptions4 = fitoptions('Method','NonlinearLeastSquares','Algorithm','Trust-Region',...
+        'Lower',[minBackgroundEstimate,0,0,-Inf,-Inf,0,0,-Inf,-Inf,0,0,-Inf,-Inf,0,0,-Inf,-Inf],...
+        'Upper',[maxBackgroundEstimate,Inf,maxWidthEstimate,Inf,Inf,Inf,maxWidthEstimate,Inf,Inf,...
         Inf,maxWidthEstimate,Inf,Inf,Inf,maxWidthEstimate,Inf,Inf],'MaxIter',600,...
         'Startpoint',[backgroundRawImage,heightEstimate,...
         widthEstimate,positionX,positionY,...
@@ -211,7 +205,6 @@ for k = 1:numberOfSpots.NumObjects
             if multGauss ~= 0
                 for ii = 1:4
                     [sfit{ii},gof{ii}] = fit([columnPosition,rowPosition],double(tempNewRawImage),MultipleGauss{ii});
-                    
                 end
             else
                 for ii = 1:1
@@ -524,7 +517,7 @@ for k = 1:numberOfSpots.NumObjects
                         cellData = getextradata(cellData);
                     end
                     [l,d] = projectToMesh(cellData.box(1)-1+posX(jj),...
-                        cellData.box(2)-1+posY(jj),cellData.mesh,cellData.steplength); %#ok<AGROW>
+                        cellData.box(2)-1+posY(jj),cellData.mesh,cellData.steplength);
                     for kk = 1:size(cellData.mesh,1)-1
                         pixelPeakX = [cellData.mesh(kk,[1 3]) cellData.mesh(kk+1,[3 1])] - cellData.box(1)+1;
                         pixelPeakY = [cellData.mesh(kk,[2 4]) cellData.mesh(kk+1,[4 2])] - cellData.box(2)+1;
