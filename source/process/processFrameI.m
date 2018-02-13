@@ -605,7 +605,7 @@ elseif imsizes(1,1) >= 1600 || imsizes(1,2) >= 1600
                     pmap1 = 1 - perim + imerode(pmap,se);
                     f1 = max(max(pmap1-pmap))>0;
                     pmap = pmap1;
-                end;
+                end
                 regDmap = ((pmap+1) + 5*(1-roiImg/imgemax)).*roiMask;
                 maxdmap = max(max(regDmap)); %#ok
                  % crop the energy and forces maps to the ROI

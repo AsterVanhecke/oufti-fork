@@ -306,15 +306,6 @@ uicontrol(handles.polaritypanel,'units','pixels','Position',[5 46 74 15],'Style'
 handles.setpolarity     = uicontrol(handles.polaritypanel,'units','pixels','Position',[5 27 74 20],'Style','togglebutton','String','Set','callback',@polarity_cbk,'KeyPressFcn',@mainkeypress,'FontUnits','pixels','FontName','Helvetica','FontSize',10);
 handles.removepolarity  = uicontrol(handles.polaritypanel,'units','pixels','Position',[5 5 74 20],'Style','togglebutton','String','Remove','callback',@polarity_cbk,'KeyPressFcn',@mainkeypress,'FontUnits','pixels','FontName','Helvetica','FontSize',10);
 
-% % % % Manual operations
-% % % handles.specialpanel = uipanel('units','pixels','pos',[504 5 163 66]);
-% % % uicontrol(handles.specialpanel,'units','pixels','Position',[5 46 154 15],'Style','text','String','Manual','FontWeight','bold','FontUnits','pixels','FontName','Helvetica','FontSize',10);
-% % % handles.join = uicontrol(handles.specialpanel,'units','pixels','Position',[5 27 74 20],'Style','pushbutton','String','Join','callback',@manual_cbk,'KeyPressFcn',@mainkeypress,'Tooltipstring','Force join two or more cells','FontUnits','pixels','FontName','Helvetica','FontSize',10);
-% % % handles.split = uicontrol(handles.specialpanel,'units','pixels','Position',[5 5 74 20],'Style','pushbutton','String','Split','callback',@manual_cbk,'KeyPressFcn',@mainkeypress,'Tooltipstring','Force split a cell','FontUnits','pixels','FontName','Helvetica','FontSize',10);
-% % % handles.refine = uicontrol(handles.specialpanel,'units','pixels','Position',[82 27 74 20],'Style','pushbutton','String','Refine','callback',@manual_cbk,'KeyPressFcn',@mainkeypress,'Tooltipstring','Refine the cell outline under the current parameters','FontUnits','pixels','FontName','Helvetica','FontSize',10);
-% % % handles.addcell = uicontrol(handles.specialpanel,'units','pixels','Position',[82 5 74 20],'Style','togglebutton','String','Add','callback',@manual_cbk,'KeyPressFcn',@mainkeypress,'Tooltipstring','Add a cell by clicking its outline (alg. 1) or centerline (alg. 4), doubleclick or press Enter to select, Esc to cancel','FontUnits','pixels','FontName','Helvetica','FontSize',10);
-% % % 
-
 % Manual operations
 handles.specialpanel    = uipanel('units','pixels','pos',[504 5 163 66]);
 uicontrol(handles.specialpanel,'units','pixels','Position',[5 46 154 15],'Style','text','String','Manual','FontWeight','bold','FontUnits','pixels','FontName','Helvetica','FontSize',10);
@@ -326,7 +317,6 @@ handles.refine          = uicontrol(handles.specialpanel,'units','pixels','Posit
 handles.refineAll       = uicontrol(handles.specialpanel,'units','pixels','Position',[55 5 55 20],'Style','pushbutton','String','Refine All','callback',@manual_cbk,'KeyPressFcn',@mainkeypress,'Tooltipstring',...
                             'Refine all the cells that are selected or just went under drag mode using cell outline under the current parameters','FontUnits','pixels','FontName','Helvetica','FontSize',10);
 handles.drag            = uicontrol(handles.specialpanel,'units','pixels','Position',[114 5 45 20],'Style','togglebutton','String','Drag','FontUnits','pixels','FontName','Helvetica','FontSize',10,'callback',@manual_cbk,'KeyPressFcn',@selectclick);
-
 
 % Parameters
 handles.parampanel  = uipanel('units','pixels','pos',[780 10 216 20]);
@@ -421,7 +411,6 @@ set(handles.maingui,'visible','on');
 %%
 
 function changeDir()
-
     %find where oufti exists, modify that folder
     ouftiLocation = which('oufti');
     ix = strfind(ouftiLocation,'\');
@@ -468,7 +457,7 @@ function subtbgrcbk(hObject, eventdata)%#ok<INUSD>
         if imageDispMode==4 && (isempty(who('rawS2Data')) || isempty(rawS2Data)), return; end
         % if imageDispMode~=3 && imageDispMode~=4, return; end
         [filename,pathname] = uiputfile('*.tif', 'Enter a filename for the first image');
-        if(filename==0), return; end;
+        if(filename==0), return; end
         if length(filename)>4 && strcmp(filename(end-3:end),'.tif'), filename = filename(1:end-4); end
         lng = imsizes(imageDispMode,3);
         ndig = ceil(log10(lng+1));
@@ -483,7 +472,7 @@ function subtbgrcbk(hObject, eventdata)%#ok<INUSD>
         end
         if lng==1, k=0; end
         filename = fullfile2(pathname,filename(1:end-k));
-        for i=1:lng;
+        for i=1:lng
             fnum=i+istart-1;
             if lng>1
                 cfilename = [filename num2str(fnum,['%.' num2str(ndig) 'd']) '.tif'];
@@ -503,11 +492,9 @@ end
     
 
 function alignphaseframes(hObject, eventdata)%#ok<INUSD>
-    
     global rawPhaseData rawS1Data rawS2Data filenametmp % rawPhaseDataT cellListT shiftframesT
-    
     if hObject==handles.alignframes
-        edit2p
+        edit2p % Update parameters
         alignfrm
         if ~isempty(shiftframes)
             set(handles.resetshift,'Enable','on');
@@ -517,14 +504,14 @@ function alignphaseframes(hObject, eventdata)%#ok<INUSD>
     elseif hObject==handles.savealignment
         if isempty(shiftframes), return; end
         [filename,pathname] = uiputfile('*.mat', 'Enter a filename to save alignment data to',filenametmp);
-        if(filename==0), return; end;
+        if(filename==0), return; end
         if length(filename)<5, filename = [filename '.mat']; end
         if ~strcmp(filename(end-3:end),'.mat'), filename = [filename '.mat']; end
         filename = fullfile2(pathname,filename);
         savealign(filename)
     elseif hObject==handles.loadalignment
         [filename,pathname] = uigetfile('*.mat', 'Enter a filename to save alignment data to',filenametmp);
-        if(filename==0), return; end;
+        if(filename==0), return; end
         filename = fullfile2(pathname,filename);
         loadalign(filename)
         set(handles.resetshift,'Enable','on');
@@ -794,7 +781,7 @@ function batchcontrol(hObject, eventdata)%#ok<INUSD>
     elseif hObject==handles.batchrem && length(handles.batch)>1, remBatchPanel; return;
     elseif hObject==handles.batchsave
         [filename,pathname] = uiputfile('*.btc', 'Enter a filename to save batch to');
-        if(filename==0), return; end;
+        if(filename==0), return; end
         if length(filename)<4, filename = [filename '.btc']; end
         if ~strcmp(filename(end-3:end),'.btc'), filename = [filename '.btc']; end
         filename = fullfile2(pathname,filename);
@@ -832,7 +819,7 @@ end
 function runstruct = batchload
     % loads saved batch sequence into the GUI-based batch window
     [filename,pathname] = uigetfile('*.btc', 'Enter a filename to get batch from');
-    if(filename==0), runstruct = []; return; end;
+    if(filename==0), runstruct = []; return; end
     batchfields = fieldnames(handles.batch(1));
     for i=1:length(batchfields)
         eval(['runstruct(1).' batchfields{i} '='''';']);
@@ -1061,7 +1048,7 @@ function batchloadfile(hObject, eventdata)%#ok<INUSD>
         % selecting folders / files
         if hObject==handles.batchc(k).bloadsgn1 && ~get(handles.batch(k).bloadsgn1chk,'Value')
             signalFolder = uigetdir(imageFolders{1},'Select Directory with Phase Images...');
-            if(signalFolder==0), return; end;
+            if(signalFolder==0), return; end
             imageFolders{1} = signalFolder;
             batchstruct(k).bloadsgn1 = signalFolder;
             set(handles.batch(k).bloadsgn1,'String',slashsplit(signalFolder))
@@ -1075,28 +1062,28 @@ function batchloadfile(hObject, eventdata)%#ok<INUSD>
         % end
         if hObject==handles.batchc(k).bloadsgn3 && ~get(handles.batch(k).bloadsgn3chk,'Value')
             signalFolder = uigetdir(imageFolders{3},'Select Directory with Signal 1 Images...');
-            if(signalFolder==0), return; end;
+            if(signalFolder==0), return; end
             imageFolders{3} = signalFolder;
             batchstruct(k).bloadsgn3 = signalFolder;
             set(handles.batch(k).bloadsgn3,'String',slashsplit(signalFolder))
         end
         if hObject==handles.batchc(k).bloadsgn4 && ~get(handles.batch(k).bloadsgn4chk,'Value')
             signalFolder = uigetdir(imageFolders{4},'Select Directory with Signal 2 Images...');
-            if(signalFolder==0), return; end;
+            if(signalFolder==0), return; end
             imageFolders{4} = signalFolder;
             batchstruct(k).bloadsgn4 = signalFolder;
             set(handles.batch(k).bloadsgn4,'String',slashsplit(signalFolder))
         end
         if hObject==handles.batchc(k).bloadmesh
             [filename,pathname] = uigetfile('*.mat', 'Enter a filename to get meshes from');
-            if(filename==0), return; end;
+            if(filename==0), return; end
             filename = fullfile2(pathname,filename);
             batchstruct(k).bloadmesh = filename;
             set(handles.batch(k).bloadmesh,'String',slashsplit(filename))
         end
         if hObject==handles.batchc(k).bloadparam
             [filename,pathname] = uigetfile({'*.set';'*.mat'}, 'Enter a filename to get parameters from',paramFile);
-            if(filename==0), return; end;
+            if(filename==0), return; end
             filename = fullfile2(pathname,filename);
             paramFile = filename;
             batchstruct(k).bloadparam = filename;
@@ -1104,7 +1091,7 @@ function batchloadfile(hObject, eventdata)%#ok<INUSD>
         end
         if hObject==handles.batchc(k).bsavemesh
             [filename,pathname] = uiputfile('*.mat', 'Enter a filename to save the result (mesh) to',meshFile);
-            if(filename==0), return; end;
+            if(filename==0), return; end
             filename = fullfile2(pathname,filename);
             meshFile = filename;
             batchstruct(k).bsavemesh = filename;
@@ -1113,21 +1100,21 @@ function batchloadfile(hObject, eventdata)%#ok<INUSD>
         % selecting stack files
         if hObject==handles.batchc(k).bloadsgn1 && get(handles.batch(k).bloadsgn1chk,'Value')
             [filename,pathname] = uigetfile('*.*','Select Stack File with Phase Images...',fileparts(imageFiles{1}));
-            if isequal(filename,0), return; end;
+            if isequal(filename,0), return; end
             fullfilename = fullfile(pathname,filename);
             imageFiles{1} = fullfilename;
             batchstruct(k).bloadsgn1 = fullfilename;
             set(handles.batch(k).bloadsgn1,'String',filename)
         elseif hObject==handles.batchc(k).bloadsgn3 && get(handles.batch(k).bloadsgn3chk,'Value')
             [filename,pathname] = uigetfile('*.*','Select Stack File with Signal 1 Images...',fileparts(imageFiles{3}));
-            if isequal(filename,0), return; end;
+            if isequal(filename,0), return; end
             fullfilename = fullfile(pathname,filename);
             imageFiles{3} = fullfilename;
             batchstruct(k).bloadsgn3 = fullfilename;
             set(handles.batch(k).bloadsgn3,'String',filename)
         elseif hObject==handles.batchc(k).bloadsgn4 && get(handles.batch(k).bloadsgn4chk,'Value')
             [filename,pathname] = uigetfile('*.*','Select Stack File with Signal 2 Images...',fileparts(imageFiles{4}));
-            if isequal(filename,0), return; end;
+            if isequal(filename,0), return; end
             fullfilename = fullfile(pathname,filename);
             imageFiles{4} = fullfilename;
             batchstruct(k).bloadsgn4 = fullfilename;
@@ -1404,7 +1391,7 @@ function displayImage
     elseif get(handles.zoomcheck,'Value')==1 && strcmp(get(handles.hfig,'Visible'),'off')
         set(handles.hfig,'Visible','on');
     end
-    if ~isempty(dellist),
+    if ~isempty(dellist)
         for i=1:length(dellist)
             if ishandle(dellist{i})
                 delete(dellist{i})
@@ -1440,7 +1427,7 @@ function displayImage
     %drawnow(); %pause(0.005);%java.lang.Thread.sleep(10);
     apiMB = iptgetapi(handles.hMagBox);
     apiSP = iptgetapi(handles.hpanel);
-    if get(handles.zoomcheck,'Value')==0, 
+    if get(handles.zoomcheck,'Value')==0
         set(handles.hMagBox,'Enable','off');
         set(handles.zoomin,'Enable','off');
         set(handles.zoomout,'Enable','off');
@@ -1458,7 +1445,7 @@ function displayImage
         fname = slashsplit2(imageFiles{imageDispMode});
     end
     set(handles.currentimage,'String',[fname ' (' imstring1{imageDispMode} ')']);
-    if ishandle(groupSelectionRectH), delete(groupSelectionRectH); end;
+    if ishandle(groupSelectionRectH), delete(groupSelectionRectH); end
     tmp = get(get(handles.impanel,'children'),'children');
 
     if iscell(tmp), tmp=tmp{1}; end
@@ -1527,7 +1514,7 @@ function displayCells
     ax = get(get(handles.impanel,'children'),'children');
     ah = ~ishandle(ax);
     if ah(1) && ~iscell(ax), disp('Cells display terminated: cannot create axes'); return; end
-    if iscell(ax), ax = ax{1}; end;
+    if iscell(ax), ax = ax{1}; end
     ax(2) = get(handles.himage,'parent');
     handles.cells = [];
     col = dispMeshColor;
@@ -1621,7 +1608,7 @@ function displayCells
         catch
            
         end
-    end;
+    end
     xlim(ax(1),[0 imsizes(end,2)]);
     ylim(ax(2),[0 imsizes(end,1)]);
     xlim(ax(1),[0 imsizes(end,2)]);
@@ -1655,7 +1642,7 @@ function displayCellsForDrag(celln)
     ax = get(get(handles.impanel,'children'),'children');
     ah = ~ishandle(ax);
     if ah(1) && ~iscell(ax), disp('Cells display terminated: cannot create axes'); return; end
-    if iscell(ax), ax = ax{1}; end;
+    if iscell(ax), ax = ax{1}; end
     ax(2) = get(handles.himage,'parent');
     handles.cells = [];
     col = dispMeshColor;
@@ -1731,7 +1718,7 @@ function updateorientation(celln)
     end   
     if ~ishandle(handles.hfig), return; end
     ax = get(get(handles.impanel,'children'),'children');
-    if iscell(ax), ax = ax{1}; end;
+    if iscell(ax), ax = ax{1}; end
     ax(2) = get(handles.himage,'parent');
     if length(handles.cells)>=idPos, delete(handles.cells{idPos}); end
     if meshDispMode==0, return; end
@@ -2013,7 +2000,7 @@ function saveloadselection(mode)
     end
     if mode==1 || (mode==0 && isempty(selectFile)) % save as
         [filename,pathname] = uiputfile2('*.mat', 'Enter a filename to save the list of selected cells to',selectFile);
-        if isequal(filename,0), return; end;
+        if isequal(filename,0), return; end
         if length(filename)<=4
             filename = [filename '.mat'];
         elseif ~strcmp(filename(end-3:end),'.mat')
@@ -2028,7 +2015,7 @@ function saveloadselection(mode)
         end
     elseif mode==2 % load
         [filename,pathname] = uigetfile2('*.mat', 'Enter a filename to get the list of selected cells from',selectFile);
-        if(filename==0), return; end;
+        if(filename==0), return; end
         selectFile = fullfile2(pathname,filename);
         l = load(selectFile,'selectedList');
         if isempty(fields(l))
@@ -2052,7 +2039,7 @@ function saveloadshiftfluo(mode)
     end
     if mode==1 || (mode==0 && isempty(shiftfluoFile)) % save as
         [filename,pathname] = uiputfile2('*.mat', 'Enter a filename to save the list of selected cells to',shiftfluoFile);
-        if isequal(filename,0), return; end;
+        if isequal(filename,0), return; end
         if length(filename)<=4
             filename = [filename '.mat'];
         elseif ~strcmp(filename(end-3:end),'.mat')
@@ -2067,7 +2054,7 @@ function saveloadshiftfluo(mode)
         end
     elseif mode==2 % load
         [filename,pathname] = uigetfile2('*.mat', 'Enter a filename to get the list of selected cells from',shiftfluoFile);
-        if(filename==0), return; end;
+        if(filename==0), return; end
         shiftfluoFile = fullfile2(pathname,filename);
         l = load(shiftfluoFile,'shiftfluo');
         if isempty(fields(l))
@@ -2119,7 +2106,7 @@ choiceSelection2 = '';
     
 for frm = range
     if oufti_isFrameNonEmpty(frm, cellList)
-       for celln = selectedList;
+       for celln = selectedList
            if oufti_doesCellExist(celln, frm, cellList)
                %---------------------------------------------------------------------------------
                %this portion of the code removes the offspring of a cell
@@ -2349,7 +2336,7 @@ function displayCellsForManualOperations(listOfCells,yesDraw)
     ax = get(get(handles.impanel,'children'),'children');
     ah = ~ishandle(ax);
     if ah(1) && ~iscell(ax), disp('Cells display terminated: cannot create axes'); return; end
-    if iscell(ax), ax = ax{1}; end;
+    if iscell(ax), ax = ax{1}; end
     ax(2) = get(handles.himage,'parent');
     col = dispMeshColor;
     % k=1 is main window,
@@ -2497,7 +2484,7 @@ else
      % determine whether Shift/Control/Alt has been pressed
      if hObject==handles.maingui
         ax = get(get(handles.impanel,'children'),'children');
-        if iscell(ax), ax = ax{1}; end;
+        if iscell(ax), ax = ax{1}; end
         extend = strcmpi(hFig.SelectionType,'extend');
         control = strcmpi(hFig.SelectionType,'alt');
         dblclick = strcmpi(hFig.SelectionType,'open');
@@ -2516,7 +2503,7 @@ else
      try
          ps = get(ax,'CurrentPoint');
          if ~isempty(ps)
-            if ps(1,1)<0 || ps(1,1)>imsizes(end,2) || ps(1,2)<0 || ps(1,2)>imsizes(end,1), return; end;
+            if ps(1,1)<0 || ps(1,1)>imsizes(end,2) || ps(1,2)<0 || ps(1,2)>imsizes(end,1), return; end
      
              warning('off','MATLAB:warn_r14_stucture_assignment')
              pos.x = ps(1,1);
@@ -2644,7 +2631,7 @@ else
               if ishandle(ax),cp = get(ax,'CurrentPoint');end
               if ishandle(handles.impanel),impanelStruct = struct(get(handles.impanel));end
               ax2 = get(impanelStruct.Children,'children');
-              if iscell(ax2), ax2 = ax2{1}; end;
+              if iscell(ax2), ax2 = ax2{1}; end
            
               pointHistoryX = cp(1,1);
               pointHistoryY = cp(1,2);
@@ -2682,7 +2669,7 @@ else
         ax = get(get(handles.impanel,'children'),'children');
         ah = ~ishandle(ax);
         if ah(1) && ~iscell(ax), disp('Could not add point: cannot find axes'); return; end
-        if iscell(ax), ax = ax{1}; end;
+        if iscell(ax), ax = ax{1}; end
         ax(2) = get(handles.himage,'parent');
         cellDrawPositions = [cellDrawPositions;ps(1,1:2)];
         if ishandle(cellDrawObjects), delete(cellDrawObjects); end
@@ -2888,7 +2875,7 @@ function makeCellFromPoints(askfornumber)
 %             end
 %         end
 %     end
-    for celln=1:oufti_getFrameLength(frame, cellList);
+    for celln=1:oufti_getFrameLength(frame, cellList)
         %~isempty(cellList{frame}{celln}) && isfield(cellList{frame}{celln},'timelapse')
         if oufti_doesCellExist(celln, frame, cellList)
             cell = oufti_getCellStructure(celln, frame, cellList);
@@ -2999,7 +2986,7 @@ function dragbutonup(hObject, eventdata)%#ok<INUSD>
         if hObject==handles.maingui
             ax = get(get(handles.impanel,'children'),'children');
             if ishandle(handles.himage), ax(2) = get(handles.himage,'parent'); end
-            if iscell(ax), ax = ax{1}; end;
+            if iscell(ax), ax = ax{1}; end
             extend = strcmpi(hFig.SelectionType,'extend');
         else
             ax = get(handles.himage,'parent');
@@ -3095,7 +3082,7 @@ function pos = getmousepos
     ps = get(himageStruct.Parent,'CurrentPoint');
     pos.x = ps(1,1);
     pos.y = ps(1,2);
-    if ps(1,1)<0 || ps(1,1)>imsizes(end,2) || ps(1,2)<0 || ps(1,2)>imsizes(end,1), pos = []; end;
+    if ps(1,1)<0 || ps(1,1)>imsizes(end,2) || ps(1,2)<0 || ps(1,2)>imsizes(end,1), pos = []; end
 end
 
 function mousemove(hObject, eventdata)%#ok<INUSD>
@@ -3107,7 +3094,7 @@ function mousemove(hObject, eventdata)%#ok<INUSD>
     if ishandle(imageHandle),delete(imageHandle.fig);end
     if hObject==handles.maingui
         ax = get(get(handles.impanel,'Children'),'Children');
-        if iscell(ax), ax = ax{1}; end;
+        if iscell(ax), ax = ax{1}; end
         extend = strcmp(hFig.SelectionType,'extend');
     else
         if ~ishandle(handles.himage), return; end
@@ -3129,7 +3116,7 @@ function mousemove(hObject, eventdata)%#ok<INUSD>
         % selecting a group of cells: draw rectangle
         ps = get(ax,'CurrentPoint');
         pos = ps(1,1:2);
-        if ishandle(groupSelectionRectH), delete(groupSelectionRectH); end;
+        if ishandle(groupSelectionRectH), delete(groupSelectionRectH); end
         if regionSelectionMode
             groupSelectionRectH = rectangle('Position',[min(pos,groupSelectionPosition),max([1,1],abs(pos-groupSelectionPosition))],...
                 'EdgeColor',[1 0 0],'LineStyle',':');
@@ -3144,7 +3131,7 @@ function mousemove(hObject, eventdata)%#ok<INUSD>
     %     set(handles.logcheck,'Value',0)
     % end
     catch err
-        if ishandle(groupSelectionRectH), delete(groupSelectionRectH); end;
+        if ishandle(groupSelectionRectH), delete(groupSelectionRectH); end
     end
 end
 
@@ -3187,7 +3174,7 @@ function contrast_cbk(hObject, eventdata)%#ok<INUSD>
     if ~ishandle(handles.hpanel), return; end
     if ~ishandle(handles.hfig), return; end
     ax = get(get(handles.impanel,'children'),'children');
-    if iscell(ax), ax = ax{1}; end;
+    if iscell(ax), ax = ax{1}; end
     imgh = findall(ax,'Type','image');
     img = get(imgh,'CData');
     if strcmp(class(img),'double')
@@ -3681,7 +3668,7 @@ end
 
 function ctrclosereq(hObject, eventdata)%#ok<INUSD>
     ax = get(get(handles.impanel,'children'),'children');
-    if iscell(ax), ax = ax{1}; end;
+    if iscell(ax), ax = ax{1}; end
     imageLimits{imageDispMode} = get(ax,'CLim');
     delete(handles.ctrfigure)
 end
@@ -3730,7 +3717,7 @@ function saveLoadMesh_cbk(hObject, eventdata)%#ok<INUSD>
     if hObject==handles.savemesh
         %[filename,pathname] = uiputfile('*.mat', 'Enter a filename to save meshes to','');
         [filename,pathname] = uiputfile2('*.mat', 'Enter a filename to save meshes to',meshFile);
-        if isequal(filename,0), return; end;
+        if isequal(filename,0), return; end
         if length(filename)<=4
             filename = [filename '.mat'];
         elseif ~strcmp(filename(end-3:end),'.mat')
@@ -3742,7 +3729,7 @@ function saveLoadMesh_cbk(hObject, eventdata)%#ok<INUSD>
     elseif hObject==handles.loadmesh
         [filename,pathname] = uigetfile2({'*.mat;*.out'},...
                             'Enter a filename to get meshes from',filenametmp);
-        if(filename==0), return; end;
+        if(filename==0), return; end
         filename = fullfile2(pathname,filename);
         meshFile = filename;
         param = loadmesh(filename);
@@ -3770,7 +3757,7 @@ function saveFileControl(hObject, eventdata)%#ok<INUSD>
      global filenametmp
     %Ask for a filename to save the data to
     [filename,pathname] = uiputfile('*.mat', 'Enter a filename to save settings to',filenametmp);
-    if(filename==0), return; end;
+    if(filename==0), return; end
     if length(filename)<5, filename = [filename '.mat']; end
     if ~strcmp(filename(end-3:end),'.mat'), filename = [filename '.mat']; end
     saveFile = fullfile2(pathname,filename);
@@ -3965,7 +3952,7 @@ end
 % --- Loading and saving images nested functions ---
 
 function res = loadstackdisp(n,filename)
-    [res,~] = loadimagestack(n,filename,1,1);
+    res = loadimagestack(n,filename,1,1);
     global filenametmp
     filenametmp = filename;
     imsizes = updateimsizes(imsizes);
@@ -4008,7 +3995,7 @@ function loadstack(hObject, eventdata)
             else
                 [filename,pathname] = uigetfile({'*.tif';'*.tiff'},'Select Stack File with Phase Images...',imageFiles{1});
             end
-            if isequal(filename,0), return; end;
+            if isequal(filename,0), return; end
             
             %save this path as the lsat used path by oufti
             setLastDir(pathname);
@@ -4032,7 +4019,7 @@ function loadstack(hObject, eventdata)
             else
                 [filename,pathname] = uigetfile({'*.tif';'*.tiff'},'Select Stack File with Signal 1 Images...',filenametmp);
             end
-            if isequal(filename,0), return; end;
+            if isequal(filename,0), return; end
             filename = fullfile(pathname,filename);
             filenametmp = imageFiles{3};
             imageFiles{3} = filename;
@@ -4052,7 +4039,7 @@ function loadstack(hObject, eventdata)
             else
                 [filename,pathname] = uigetfile({'*.tif';'*.tiff'},'Select Stack File with Signal 2 Images...',filenametmp);
             end
-            if isequal(filename,0), return; end;
+            if isequal(filename,0), return; end
             filename = fullfile(pathname,filename);
             filenametmp = imageFiles{4};
             imageFiles{4} = filename;
@@ -4074,7 +4061,7 @@ function loadphase(hObject, eventdata)%#ok<INUSD>
     
     setLastDir(rawPhaseFolder);
     
-    if isequal(rawPhaseFolder,0), return; end;
+    if isequal(rawPhaseFolder,0), return; end
     imageActive(1) = false;
     loadimagesdisp(1,rawPhaseFolder)
 end
@@ -4095,7 +4082,7 @@ end
 function loadfm(hObject, eventdata)%#ok<INUSD>
     global rawFMFolder
     rawFMFolder = uigetdir(imageFolders{2},'Select Directory with Extra Images...');
-    if isequal(rawFMFolder,0), return; end;
+    if isequal(rawFMFolder,0), return; end
     imageActive(2) = false;
     loadimagesdisp(2,rawFMFolder)
 end
@@ -4103,7 +4090,7 @@ end
 function loads1(hObject, eventdata)%#ok<INUSD>
     global rawS1Folder
     rawS1Folder = uigetdir(imageFolders{1},'Select Directory with Signal 1 Images...');
-    if isequal(rawS1Folder,0), return; end;
+    if isequal(rawS1Folder,0), return; end
     imageActive(3) = false;
     loadimagesdisp(3,rawS1Folder)
 end
@@ -4111,7 +4098,7 @@ end
 function loads2(hObject, eventdata)%#ok<INUSD>
     global rawS2Folder
     rawS2Folder = uigetdir(imageFolders{1},'Select Directory with Signal 2 Images...');
-    if isequal(rawS2Folder,0), return; end;
+    if isequal(rawS2Folder,0), return; end
     imageActive(4) = false;
     loadimagesdisp(4,rawS2Folder)
 end
@@ -4358,7 +4345,7 @@ function loadimages(n,folder)
         else disp('No images loaded');return; end
     eval(['imageLimits{n} = 2^' num2str(lng) '*mean(stretchlim(' str ',[0.0001 0.9999]),2);']);
     %eval(['imageLimits{n} = im2double([min(min(min(' str '))) max(max(max(' str ')))]);']);
-    if(folder==-1), return; end; 
+    if(folder==-1), return; end 
     eval(['imsizes(n,:) = [size(' str ',1) size(' str ',3) size(' str ',3)];']);
     disp(['Loaded ' num2str(imsizes(n,3)) ' files'])
     imsizes = updateimsizes(imsizes);
@@ -4485,7 +4472,7 @@ function res=loadparam(filename)
             errordlg(['Could not open parameters file! Make sure the file exists and'...
                 ' the parameters are saved in the correct format.']);
             return;
-        end;
+        end
     elseif length(filename)>4 && strcmp(filename(end-3:end),'.mat')
         res = load(filename);
         if isempty(res)
@@ -4648,7 +4635,7 @@ else
         disp('Refining cells failed: one or more required parameters not provided.');
         return
     end
-    if ~oufti_isFrameNonEmpty(frame, cellList) || (isempty(lst) && isempty(cellsToDragHistory)), return; end;
+    if ~oufti_isFrameNonEmpty(frame, cellList) || (isempty(lst) && isempty(cellsToDragHistory)), return; end
     if ~ismember(p.algorithm,[2 3 4]), disp('There is no refinement routine for algorithm 1'); return; end
     if frame>size(rawPhaseData,3), return; end
     if p.invertimage        
@@ -4940,7 +4927,7 @@ function res = forcejoincells(frame,lst)
         pmap1 = 1 - edg + imerode(pmap,se);
         f1 = max(max(pmap1-pmap))>0;
         pmap = pmap1;
-    end;
+    end
     pmapEnergy = pmap + 0.1*pmap.^2;
     pmapDx = imfilter(pmapEnergy,maskdx); % distance forces
     pmapDy = imfilter(pmapEnergy,maskdy); 
@@ -5197,7 +5184,7 @@ while true
     % Opening a mesh file
     [FileName,PathName] = uigetfile('*.mat','Select File with Mesh Data...','MultiSelect','on',[trainPDMpathName '/']);
     if isequal(FileName,0)
-        if size(cellArray,1)<1; 
+        if size(cellArray,1)<1
             return;
         else
             break;
