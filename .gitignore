@@ -17,3 +17,4 @@
 *.tif
 *.png
 
+source/gui/lastDir.mat
