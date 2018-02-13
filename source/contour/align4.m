@@ -224,7 +224,7 @@ Fq = Lx.*Fqx + Ly.*Fqy;
 Fqx = Fq.*Lx; Fqy = Fq.*Ly;
 % Get the resulting force
 if a>1, Fo = [Fx;Fy]; end
-if isempty(who('Kstp2'))||isempty(Kstp2), Kstp2 = 1; end
+if ~exist('Kstp2','var')||isempty(Kstp2), Kstp2 = 1; end
 Fx = (Fix + Fax + Fnrx + Fdstx) + Frx;
 Fy = (Fiy + Fay + Fnry + Fdsty) + Fry;
 Fs = Fx.*Tx + Fy.*Ty;
@@ -259,7 +259,7 @@ if p.moveall>0
     Fmrx =  ym*MF/MI; Fmry = -xm*MF/MI;
     mfx = nanmean(Fx); mfy = nanmean(Fy);
     if isfield(p,'fitStepM'), mfitstep = p.fitStepM; else mfitstep = p.fitStep; end
-    if isempty(who('Kstpm'))||isempty(Kstpm), Kstpm = mfitstep; end
+    if ~exist('Kstpm','var')||isempty(Kstpm), Kstpm = mfitstep; end
     Kstpm = min([Kstpm*1.5 mfitstep/(sqrt(nanmean(Fx)^2+nanmean(Fy)^2)) mfitstep/abs(MF)*sqrt(MI)]); % Katpm prevents large (>1px) mean steps
     if a>1 && (mfx*sign(mfxold)<-abs(mfxold)/2 || mfy*sign(mfyold)<-abs(mfyold)/2 || MF*sign(MFold)<-abs(MFold)/2)
        Kstpm = Kstpm/2;

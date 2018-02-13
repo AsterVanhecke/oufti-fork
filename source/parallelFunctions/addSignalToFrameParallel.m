@@ -78,11 +78,11 @@ if length(find(addsig)) == 3
     end
 elseif length(find(addsig)) == 2
     if (~isempty(rawPhaseData) && ~isempty(rawS1Data))
-        if find(addsig) == [1,3] 
+        if isequal(find(addsig) , [1,3])
             tempData = {rawPhaseData(:,:,range(1):range(2)),rawS1Data(:,:,range(1):range(2))};
-        elseif find(addsig) == [1,4] && ~isempty(rawPhaseData) && ~isempty(rawS2Data)
+        elseif isequal(find(addsig) , [1,4]) && ~isempty(rawPhaseData) && ~isempty(rawS2Data)
             tempData = {rawPhaseData(:,:,range(1):range(2)),rawS2Data(:,:,range(1):range(2))};
-        elseif find(addsig) == [3,4] && ~isempty(rawS1Data) && ~isempty(rawS2Data)
+        elseif isequal(find(addsig) , [3,4]) && ~isempty(rawS1Data) && ~isempty(rawS2Data)
             tempData = {rawS1Data(:,:,range(1):range(2)),rawS2Data(:,:,range(1):range(2))};
         end
     end
