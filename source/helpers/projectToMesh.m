@@ -23,41 +23,63 @@ L = zeros(size(x));
 D = zeros(size(x));
 I = zeros(size(x));
 stplng = [-delta;cumsum(stplng)];
-for i=1:length(x)
-    [dist,pn] = point2linedist(xCurve2,yCurve2,x(i),y(i));
-    [tmp,j] = min(dist);
-    L(i) = stplng(j)+distance(pn(j,:),[xCurve2(j) yCurve2(j)]);
-    if (x(i)-xCurve2(j))*(yCurve2(j+1)-yCurve2(j))<(y(i)-yCurve2(j))*(xCurve2(j+1)-xCurve2(j))
+for ii=1:numel(x) % TODO: vectorize this loop?
+    [dist,pn] = point2linedist(xCurve2,yCurve2,x(ii),y(ii)); % slowest
+    [~,j] = min(dist);
+    L(ii) = stplng(j)+distance(pn(j,:),[xCurve2(j) yCurve2(j)]);
+    if (x(ii)-xCurve2(j))*(yCurve2(j+1)-yCurve2(j))<(y(ii)-yCurve2(j))*(xCurve2(j+1)-xCurve2(j))
         ori=1;
     else
         ori=-1;
     end
-    D(i) = sqrt(dist(j))*ori;
-    I(i) = j;
+    D(ii) = sqrt(dist(j))*ori;
+    I(ii) = j;
 end
 
 function c=distance(a,b)
 c = (sum((a-b).^2))^0.5;
-    
+
+% Vectorized version:
 function [dist,pn] = point2linedist(xline,yline,xp,yp)
 % point2linedist: distance,projections(line,point).
 % A modification of SEGMENT_POINT_DIST_2D
 % (http://people.scs.fsu.edu/~burkardt/m_src/geometry/segment_point_dist_2d.m)
-dist = zeros(length(xline)-1,1);
-pn = zeros(length(xline)-1,2);
+% xline and yline have to be N-by-1
 p = [xp,yp];
-for i=2:length(xline)
-      p1 = [xline(i-1) yline(i-1)];
-      p2 = [xline(i) yline(i)];
-      if isequal(p1,p2)
-          t = 0;
-      else
-          bot = sum((p2-p1).^2);
-          t = (p-p1)*(p2-p1)'/bot;
-          % if max(max(t))>1 || min(min(t))<0, dist=-1; return; end
-          t = max(t,0);
-          t = min(t,1);
-      end
-      pn(i-1,:) = p1 + t * ( p2 - p1 );
-      dist(i-1) = sum ( ( pn(i-1,:) - p ).^2 );
-end
+
+%%
+
+p1= [xline(1:end-1) , yline(1:end-1)];
+p2= [xline(2:end) , yline(2:end)];
+p2_Min_p1=p2-p1; % Calculate once instead of three times
+bot = sum(p2_Min_p1.*p2_Min_p1,2); %multiply by itself instead of power two, is supposedly faster.
+t = sum( (p-p1).*p2_Min_p1 , 2)./bot; %slowest line 
+t(bot==0)=0;
+t = max(t,0);
+t = min(t,1);
+pn = p1 + t .* ( p2_Min_p1 );
+dist = sum ( ( pn - p ).^2 ,2);
+
+% Old version
+% function [dist,pn] = point2linedist(xline,yline,xp,yp)
+% % point2linedist: distance,projections(line,point).
+% % A modification of SEGMENT_POINT_DIST_2D
+% % (http://people.scs.fsu.edu/~burkardt/m_src/geometry/segment_point_dist_2d.m)
+% dist = zeros(length(xline)-1,1);
+% pn = zeros(length(xline)-1,2);
+% p = [xp,yp];
+% for i=2:length(xline) % vectorize?
+%       p1 = [xline(i-1) yline(i-1)];
+%       p2 = [xline(i) yline(i)];
+%       if isequal(p1,p2)
+%           t = 0;
+%       else
+%           bot = sum((p2-p1).^2);
+%           t = (p-p1)*(p2-p1)'/bot; %slowest line
+%           % if max(max(t))>1 || min(min(t))<0, dist=-1; return; end
+%           t = max(t,0);
+%           t = min(t,1);
+%       end
+%       pn(i-1,:) = p1 + t * ( p2 - p1 );
+%       dist(i-1) = sum ( ( pn(i-1,:) - p ).^2 );
+% end
