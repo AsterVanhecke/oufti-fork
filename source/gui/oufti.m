@@ -4625,7 +4625,7 @@ function refinecell(frame,lst)
 % only for algorithms 2-4
 global cellList cellListN p rawPhaseData se maskdx maskdy cellsToDragHistory imageForce
 
-if length(lst) > 10
+if length(lst) > 10000 % Parallel processing seems to be slower even for ~1600 cells
    refineAllParallel(frame,lst);
     
 else
@@ -4704,7 +4704,12 @@ else
             elseif ismember(tempP.algorithm,4)
                 pcCell = align4IM(mesh,tempP);
                 pcCell = model2box(pcCell,roiBox,tempP.algorithm);
-                cCell = align4Manual(roiImg,roiExtDx,roiExtDy,roiExtDx*0,pcCell,tempP,roiBox,thres,[frame lst(celln)]);
+                try
+                    cCell = align4Manual(roiImg,roiExtDx,roiExtDy,roiExtDx*0,pcCell,tempP,roiBox,thres,[frame lst(celln)]);
+                catch
+                    disp(['Refinement failed for cell ' num2str(lst(celln))])
+                    continue
+                end
                 cCell = double(box2model(cCell,roiBox,tempP.algorithm));
             end
             if isempty(cCell), disp(['Cell ' num2str(lst(celln)) ' refinement failed: error fitting shape']); continue; end
