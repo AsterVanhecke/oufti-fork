@@ -310,19 +310,14 @@ if adjustMode
                         set(imageHandle.ax,'pos',[0 0 1 1],'NextPlot','replace');
                         set(imageHandle.fig,'pos',[17 170 pos(3)-1000+700 pos(4)-800+600]);
                  end
-                  if params.filtWin == 1,h = figure('Name','Filter Result','NumberTitle','off','position',[500 500 500 500]);imshow(filtImage,'InitialMagnification',600);end
-% % %              else
-% % %                     xBoxValue = reshape(spotStructure.x - cellData.box(1)+1,1,[]);
-% % %                     xBoxValue = xBoxValue + (size(rawImage,2)-c)/2;
-% % %                     yBoxValue = reshape(spotStructure.y - cellData.box(2)+1,1,[]);
-% % %                     yBoxValue = yBoxValue + (size(rawImage,1)-r)/2;
-% % %                     plot(xBoxValue,yBoxValue,'xr','LineWidth',4)
-% % %                     for k = 1:length(spotStructure.l)
-% % %                         text(double(xBoxValue(k))+1,double(yBoxValue(k)),num2str(k),'Color',[0,1,1],'FontSize',14);
-% % %                     end
-% % %                     set(imageHandle.ax,'pos',[0 0 1 1],'NextPlot','replace');
-% % %                     set(imageHandle.fig,'pos',[17 170 pos(3)-1000+700 pos(4)-800+600]);
-% % %               end
+                  if params.filtWin == 1
+                      h = figure('Name','Filter Result','NumberTitle','off','position',[500 500 500 500]);
+                      imshow(filtImage,'InitialMagnification',600);
+                      figure, subplot(1,2,1), imagesc(dispStructure.BGsubImage), axis image
+                      hold on,plot(plgx,plgy,'r'), plot(spotStructure.x-cellData.box(1)+1,spotStructure.y-cellData.box(2)+1,'r+')
+                      subplot(1,2,2), imagesc(dispStructure.backgroundImage), axis image
+                      hold on,plot(plgx,plgy,'r')
+                  end
           end
 %----------------------------------------------------------------------------------------------
              %-------------------------------------------------------------

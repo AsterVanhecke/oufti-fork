@@ -560,10 +560,10 @@ warning off
 w = imageFilterAndDisplay(framerange,cellRange1,cellRange2,adjustmode,outfile, ...
                       outscreen,outfield,params,L1,signalData);
 catch err
-          for ii = 1:length(err.stack)
-      disp(['Error in ' err.stack(ii).file ' in line ' num2str(err.stack(ii).line)])
-      end
-      disp(['Error Message:' err.message])
+    for ii = 1:length(err.stack)
+        disp(['Error in ' err.stack(ii).file ' in line ' num2str(err.stack(ii).line)])
+    end
+    disp(['Error Message:' err.message])
 end      
 %-----------------------------------------------------------------------------------
 
@@ -725,7 +725,7 @@ end
 function resizefcn(hObject, eventdata)
 global handles1 handles 
 c = get(handles.maingui,'CurrentCharacter');
-set(handles1.stop,'pos',[5 40 125 22],'Visible','on');
+set(handles1.stop,'pos',[5 40 125 22],'Visible','on'); % spawns errors
 set(handles1.postProcessButton,'pos',[135 40 125 22],'Visible','on');
 screenSize = get(0,'ScreenSize');
 pos = get(handles.maingui,'position');
