@@ -137,7 +137,7 @@ if imsizes(1,1) < 1600 || imsizes(1,2) < 1600
                 pmap1 = 1 - perim + imerode(pmap,se);
                 f1 = max(max(pmap1-pmap))>0;
                 pmap = pmap1;
-            end;
+            end
             regDmap = ((pmap+1) + 5*(1-roiImg/imgemax)).*roiMask;
             maxdmap = max(max(regDmap)); %#ok
             % if the region is of the allowed size - try to fit the model
@@ -490,17 +490,8 @@ elseif imsizes(1,1) >= 1600 || imsizes(1,2) >= 1600
     end
     %find regions using the input values. 
     regions0 = getRegions(imge,thres,imge16,p);
-    if gpuDeviceCount == 1
-        try
-            thres = graythreshreg(gpuArray(imge),p.threshminlevel);
-        catch
-            thres = graythreshreg(imge,p.threshminlevel);
-        end
-    else
-        thres = graythreshreg(imge,p.threshminlevel);
-    end
-    bgr = phasebgr(imge,thres,se,p.bgrErodeNum);%estimated background value in pixels
-    %get extrnal energy forces of extdx and extdy.
+    bgr = phasebgr(imge,thres,se,p.bgrErodeNum);%estimated background value in pixels % unused?
+    %get external energy forces of extdx and extdy.
     if gpuDeviceCount == 1
         try
            [extDx,extDy,imageForce(currentFrame)] = getExtForces(gpuArray(imge),gpuArray(imge16),gpuArray(maskdx),gpuArray(maskdy),p,imageForce(currentFrame));
