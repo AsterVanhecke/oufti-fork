@@ -286,7 +286,7 @@ if nargin('openfig') == 2
 else
     gui_hFigure = openfig(name, singleton, visible);  
     %workaround for CreateFcn not called to create ActiveX
-    if feature('HGUsingMATLABClasses')
+    if ~verLessThan('matlab','8.4.0')
         peers=findobj(findall(allchild(gui_hFigure)),'type','uicontrol','style','text');    
         for i=1:length(peers)
             if isappdata(peers(i),'Control')
