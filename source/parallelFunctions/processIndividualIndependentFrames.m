@@ -137,13 +137,13 @@ roiBox(3:4) = floor(min(statC.BoundingBox(1:2)+statC.BoundingBox(3:4)+...
                   l_p.roiBorder,[size(img,2) size(img,1)])-roiBox(1:2));
 roiRegs = imcrop(regions0,roiBox); % ROI with all regions labeled
 roiMask = bwmorph(roiRegs==reg,'close'); % ROI with region #reg labeled
-roiImg = imcrop(imge,roiBox);    
+roiImg = imcrop(imge,roiBox);
 % if the region is of the allowed size - try to fit the model
 if statC.Area < l_p.areaMax && celln<l_p.maxCellNumber
 % crop the energy and forces maps to the ROI
 roiExtDx = imcrop(extDx,roiBox);
 roiExtDy = imcrop(extDy,roiBox);
-              
+
 
 % Making first variant of the model
 if ismember(l_p.algorithm,[2 3])
@@ -166,7 +166,7 @@ if ismember(l_p.algorithm,[2 3])
       pmap1 = 1 - perim + imerode(pmap,l_args.se);
       f1 = max(max(pmap1-pmap))>0;
       pmap = pmap1;
-    end;
+    end
     regDmap = ((pmap+1) + 5*(1-roiImg/imgemax)).*roiMask;
     maxdmap = max(max(regDmap));
     
@@ -179,7 +179,7 @@ if ismember(l_p.algorithm,[2 3])
       pmap1 = 1 - perim + imerode(pmap,l_args.se);
       f1 = max(max(pmap1-pmap))>0;
       pmap = pmap1;
-    end;
+    end
     pmapEnergy = pmap + 0.1*pmap.^2;
     pmapDx = imfilter(pmapEnergy,l_args.maskdx); % distance forces
     pmapDy = imfilter(pmapEnergy,l_args.maskdy); 

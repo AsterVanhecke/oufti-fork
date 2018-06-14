@@ -19,7 +19,7 @@ function CL = oufti_removeCellStructureFromCellList(cellId, frame, CL)
 %-------------------------------------------------------------------------- 
 
 %if frame is larger than the length of meshData then skip the process.
-if length(CL.meshData) < frame
+if length(CL.meshData) < frame || isempty(CL.meshData{frame})
    disp('oufti_removeCellStructureFromCellList: Frame larger than length of cell meshData.');
    return;
 end

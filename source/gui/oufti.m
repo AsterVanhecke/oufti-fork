@@ -1713,7 +1713,7 @@ function updateorientation(celln)
    % this function redraws a cell
     idPos = oufti_cellId2PositionInFrame(celln, frame, cellList);
     if ~oufti_doesCellExist(celln, frame, cellList)
-        if idPos <= length(handles.cells) && max(ishandle(handles.cells{idPos})==1), delete(handles.cells{idPos}); end
+        if idPos <= length(handles.cells) & max(ishandle(handles.cells{idPos})==1), delete(handles.cells{idPos}); end
         return
     end   
     if ~ishandle(handles.hfig), return; end
@@ -2241,27 +2241,31 @@ function manual_cbk(hObject, eventdata)%#ok<INUSD>
             if isempty(cellList.meshData) || length(cellList.meshData)<frame || isempty(cellList.meshData{frame})
                 disp('Splitting failed: no cells in this frame'); return
             end
-            if length(selectedList)~=1, disp('Splitting failed: Exactly one cell must be selected'); return; end
-            [lst,cellList] = forcesplitcell(frame,selectedList,[],cellList);
-            switch choiceSelection
-                     case 'Yes'
-                         for ii = frame+1:length(cellList.meshData)
-                             cellList = oufti_removeCellStructureFromCellList(selectedList,ii,cellList);
-                         end
+            lst = cell(1,length(selectedList));
+            for idx=1:length(selectedList)
+                [lst{idx},cellList] = forcesplitcell(frame,selectedList(idx),[],cellList);
+                switch choiceSelection
+                    case 'Yes'
+                        for ii = frame+1:length(cellList.meshData)
+                            cellList = oufti_removeCellStructureFromCellList(selectedList,ii,cellList);
+                        end
+                end
             end
         end
-        if length(lst)==2
-            saveundo;            selDispList = [];
+        if any(cellfun(@(x) length(x)==2,lst))
+            lst= horzcat(lst{:});
+            saveundo;
+            selDispList = [];
             selectedList = lst;
         end
-         for ii = 1:length(selectedList)
+        for ii = 1:length(selectedList)
             listOfCells.add(ii) = oufti_cellId2PositionInFrame(selectedList(ii),frame,cellList);
-         end
-         if length(listOfCells.add) == 2
+        end
+        if length(listOfCells.add) == 2
             displayCellsForManualOperations(listOfCells,1);
-         else
+        else
             displayCells();
-         end
+        end
         displaySelectedCells();
     elseif hObject==handles.refine
         if isempty(cellList.meshData) || length(cellList.meshData)<frame || isempty(cellList.meshData{frame})
@@ -2283,7 +2287,7 @@ function manual_cbk(hObject, eventdata)%#ok<INUSD>
         refineAllParallel(1:oufti_getLengthOfCellList(cellList),[]);
         displayCells();
     end
-    for cell=selectedList, updateorientation(cell); end
+    for Cell=selectedList, updateorientation(Cell); end
 % % % displayCells();
 % % % displaySelectedCells();
 showCellData();
