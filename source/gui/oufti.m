@@ -413,11 +413,11 @@ set(handles.maingui,'visible','on');
 function changeDir()
     %find where oufti exists, modify that folder
     ouftiLocation = which('oufti');
-    ix = strfind(ouftiLocation,'\');
+    ix = strfind(ouftiLocation,filesep);
     ouftiLocation(ix(end):end) = [];
     
-    if exist([ouftiLocation,'\lastDir.mat'],'file')
-        load([ouftiLocation,'\lastDir.mat'],'lastDir')
+    if exist([ouftiLocation, filesep, 'lastDir.mat'],'file')
+        load([ouftiLocation, filesep, 'lastDir.mat'],'lastDir')
 		try
 			cd(lastDir)
 		catch
@@ -3532,7 +3532,7 @@ function exportSubPixel_images(hObject,eventData)
     if strcmp('Select first phase image',hObject.String)
         if handles.exportSubPixel.loadStack.Value == 1
             [file,path] = uigetfile('*.*','Select the phase stack file');
-            [~,phaseData] = loadimagestack(1,[path '\' file],1,0);
+            [~,phaseData] = loadimagestack(1,[path filesep file],1,0);
         else
             handles.exportSubPixel.filePhase = '';
             handles.exportSubPixel.pathPhase = '';
@@ -3544,7 +3544,7 @@ function exportSubPixel_images(hObject,eventData)
     elseif strcmp('fluor1',hObject.String)
         if handles.exportSubPixel.loadStack.Value == 1
             [file,path] = uigetfile('*.*','Select the first fluorescent stack file');
-            [~,signalData1] = loadimagestack(1,[path '\' file],1,0);
+            [~,signalData1] = loadimagestack(1,[path filesep file],1,0);
         else
             handles.exportSubPixel.fileFluorOne = '';
             handles.exportSubPixel.pathFluorOne = '';
@@ -3557,7 +3557,7 @@ function exportSubPixel_images(hObject,eventData)
     elseif strcmp('fluor2',hObject.String)
          if handles.exportSubPixel.loadStack.Value == 1
             [file,path] = uigetfile('*.*','Select the second fluorescent stack file');
-            [~,signalData2] = loadimagestack(1,[path '\' file],1,0);
+            [~,signalData2] = loadimagestack(1,[path filesep file],1,0);
          else
             handles.exportSubPixel.fileFluorTwo = '';
             handles.exportSubPixel.pathFluorTwo = '';
@@ -3570,7 +3570,7 @@ function exportSubPixel_images(hObject,eventData)
     elseif strcmp('fluor3',hObject.String)
         if handles.exportSubPixel.loadStack.Value == 1
             [file,path] = uigetfile('*.*','Select the third fluorescent stack file');
-            [~,signalData3] = loadimagestack(1,[path '\' file],1,0);
+            [~,signalData3] = loadimagestack(1,[path filesep file],1,0);
         else
             handles.exportSubPixel.fileFluorThree = '';
             handles.exportSubPixel.pathFluorThree = '';
@@ -4076,7 +4076,7 @@ function setLastDir(infolder)
     lastDir = infolder;
 
     try
-        save([ouftiLocation,'\lastDir'],'lastDir')
+        save([ouftiLocation,filesep, 'lastDir'],'lastDir')
     catch
         warning('Could not update last directory used')
     end
