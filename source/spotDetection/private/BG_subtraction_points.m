@@ -1,6 +1,4 @@
 function out=BG_subtraction_points(cellData,rawImage,bgr,sigma,varargin)
-%clear
-%load('D:\Aster\PolyP\Localization\Background check\Background subtraction test data\processIndSpots_cell4_workspace2.mat')
 
 mesh=cellData.mesh;
 mesh(:,1)=mesh(:,1)-cellData.box(1)+1;% + align(1);
