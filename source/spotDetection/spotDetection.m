@@ -505,7 +505,7 @@ if saveImg && ~adjustmode
    switch choice
           case 'No'
               [FileName,pathname] = uiputfile('*.tif', 'Enter a filename for the first image',fileparts(signalMeshFileName));
-              if(FileName==0), stoprun(); return; end;
+              if(FileName==0), stoprun(); return; end
               if length(FileName)>4 && strcmp(FileName(end-3:end),'.tif'), FileName = FileName(1:end-4); end
               lng = size(signalData,3);
               ndig = ceil(log10(lng+1));
@@ -521,7 +521,7 @@ if saveImg && ~adjustmode
                outFileNameImg = [pathname, '/', FileName(1:end-k)];
            case 'Yes'
                [FileName,pathname] = uiputfile('*.tif', 'Enter a filename for the stack image',fileparts(signalMeshFileName));
-               if(FileName==0), stoprun; return; end;
+               if(FileName==0), stoprun; return; end
                if length(FileName)>4 && strcmp(FileName(end-3:end),'.tif'), FileName = FileName(1:end-4); end
                outFileNameImg = [pathname, '/', FileName(1:end)];
     end

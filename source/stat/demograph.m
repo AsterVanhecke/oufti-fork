@@ -148,25 +148,25 @@ switch descriptor
 				maxCellNum=n;
 			end
 			rand=randsample(n,maxCellNum,replacement);
-			n=0;
-			for frame = frameList
-				for cellNum = 1:length(cellList.meshData{frame})
-					if isempty(cellList.meshData{frame}{cellNum}) ...
+            n=0;
+            for frame = frameList
+                for cellNum = 1:length(cellList.meshData{frame})
+                    if isempty(cellList.meshData{frame}{cellNum}) ...
                             || length(cellList.meshData{frame}{cellNum}.mesh)<4 ...
                             || ~isfield(cellList.meshData{frame}{cellNum},signalInfo) ...
                             || eval('isempty(cellList.meshData{frame}{cellNum}.(signalInfo))') ...
                             || cellList.meshData{frame}{cellNum}.length>maxCellLength
-						continue
-					end
-					n = n+1;
-					b=rand==n;
-					
-					if sum(b)~=1
-						continue
-					end
-				  
-					maxsizelarray=[maxsizelarray length(cellList.meshData{frame}{cellNum}.lengthvector)];%#ok<AGROW>   
-				end
+                        continue
+                    end
+                    n = n+1;
+                    b=rand==n;
+                    
+                    if sum(b)~=1
+                        continue
+                    end
+                    
+                    maxsizelarray=[maxsizelarray length(cellList.meshData{frame}{cellNum}.lengthvector)];%#ok<AGROW>
+                end
             end
             if isempty(maxsizelarray)
                     warndlg(['No field ' signalInfo ' recorded for this cell:  Use Reuse meshes toggle button to compute ' signalInfo]);
@@ -176,8 +176,9 @@ switch descriptor
 			%filled in by mesh intensities
 
 			relintarray1=zeros(max(maxsizelarray),maxCellNum);
+            relintarray2=zeros(max(maxsizelarray),maxCellNum);
 			maxsizel=max(maxsizelarray);
-			if maxCellLength > maxsizel;
+			if maxCellLength > maxsizel
 			    maxCellLength = maxsizel;
 			end
 			maxsizel2 = ceil(maxsizel); if mod(maxsizel2,2)==0, maxsizel2=maxsizel2+1; end
@@ -259,17 +260,17 @@ switch descriptor
 					%%% A MOVING AVERAGE IS CALCULATED FOR EACH OF THE SEGMENTS TO FIND THE SINGLE BRIGHTEST SEGMENT AREA
 					cellList.meshData{frame}{cellNum}.meshavg=[];
                     if signal(1) == 1 && sum(signal) == 1
-                        for place = 1:(length(cellList.meshData{frame}{cellNum}.relint1)-(numPixelsMovingAverage-1));
+                        for place = 1:(length(cellList.meshData{frame}{cellNum}.relint1)-(numPixelsMovingAverage-1))
                             cellList.meshData{frame}{cellNum}.meshavg=[cellList.meshData{frame}{cellNum}.meshavg mean(cellList.meshData{frame}{cellNum}.relint1(place:(place+(numPixelsMovingAverage-1))))];
                             place=place+1;%#ok
                         end
                     elseif signal(2) == 1 && sum(signal) == 1
-                        for place = 1:(length(cellList.meshData{frame}{cellNum}.relint2)-(numPixelsMovingAverage-1));
+                        for place = 1:(length(cellList.meshData{frame}{cellNum}.relint2)-(numPixelsMovingAverage-1))
                         cellList.meshData{frame}{cellNum}.meshavg=[cellList.meshData{frame}{cellNum}.meshavg mean(cellList.meshData{frame}{cellNum}.relint2(place:(place+(numPixelsMovingAverage-1))))];
                         place=place+1; %#ok
                         end
                     elseif sum(signal) == 2
-                        for place = 1:(length(cellList.meshData{frame}{cellNum}.relint2)-(numPixelsMovingAverage-1));
+                        for place = 1:(length(cellList.meshData{frame}{cellNum}.relint2)-(numPixelsMovingAverage-1))
                             cellList.meshData{frame}{cellNum}.meshavg=[cellList.meshData{frame}{cellNum}.meshavg mean(cellList.meshData{frame}{cellNum}.relint2(place:(place+(numPixelsMovingAverage-1))))];
                             place=place+1;%#ok
                         end
@@ -515,17 +516,17 @@ switch descriptor
             %%% A MOVING AVERAGE IS CALCULATED FOR EACH OF THE SEGMENTS TO FIND THE SINGLE BRIGHTEST SEGMENT AREA
             cellList.meshData{frame}{cellNum}.meshavg=[];
             if signal(1) == 1 && sum(signal) == 1
-                for place = 1:(length(cellList.meshData{frame}{cellNum}.relint1)-(numPixelsMovingAverage-1));
+                for place = 1:(length(cellList.meshData{frame}{cellNum}.relint1)-(numPixelsMovingAverage-1))
                     cellList.meshData{frame}{cellNum}.meshavg=[cellList.meshData{frame}{cellNum}.meshavg mean(cellList.meshData{frame}{cellNum}.relint1(place:(place+(numPixelsMovingAverage-1))))];
                     place=place+1; %#ok
                 end
             elseif signal(2) == 1 && sum(signal) == 1
-                for place = 1:(length(cellList.meshData{frame}{cellNum}.relint2)-(numPixelsMovingAverage-1));
+                for place = 1:(length(cellList.meshData{frame}{cellNum}.relint2)-(numPixelsMovingAverage-1))
                     cellList.meshData{frame}{cellNum}.meshavg=[cellList.meshData{frame}{cellNum}.meshavg mean(cellList.meshData{frame}{cellNum}.relint2(place:(place+(numPixelsMovingAverage-1))))];
                     place=place+1; %#ok
                 end
             elseif sum(signal) == 2
-                for place = 1:(length(cellList.meshData{frame}{cellNum}.relint2)-(numPixelsMovingAverage-1));
+                for place = 1:(length(cellList.meshData{frame}{cellNum}.relint2)-(numPixelsMovingAverage-1))
                     cellList.meshData{frame}{cellNum}.meshavg=[cellList.meshData{frame}{cellNum}.meshavg mean(cellList.meshData{frame}{cellNum}.relint2(place:(place+(numPixelsMovingAverage-1))))];
                     place=place+1; %#ok
                 end
@@ -765,17 +766,17 @@ switch descriptor
                 %%% A MOVING AVERAGE IS CALCULATED FOR EACH OF THE SEGMENTS TO FIND THE SINGLE BRIGHTEST SEGMENT AREA
                 cellList.meshData{frame}{cellNum}.meshavg=[];
                 if signal(1) == 1 && sum(signal) == 1
-                    for place = 1:(length(cellList.meshData{frame}{cellNum}.relint1)-(numPixelsMovingAverage-1));
+                    for place = 1:(length(cellList.meshData{frame}{cellNum}.relint1)-(numPixelsMovingAverage-1))
                         cellList.meshData{frame}{cellNum}.meshavg=[cellList.meshData{frame}{cellNum}.meshavg mean(cellList.meshData{frame}{cellNum}.relint1(place:(place+(numPixelsMovingAverage-1))))];
                         place=place+1; %#ok
                     end
                 elseif signal(2) == 1 && sum(signal) == 1
-                    for place = 1:(length(cellList.meshData{frame}{cellNum}.relint2)-(numPixelsMovingAverage-1));
+                    for place = 1:(length(cellList.meshData{frame}{cellNum}.relint2)-(numPixelsMovingAverage-1))
                         cellList.meshData{frame}{cellNum}.meshavg=[cellList.meshData{frame}{cellNum}.meshavg mean(cellList.meshData{frame}{cellNum}.relint2(place:(place+(numPixelsMovingAverage-1))))];
                         place=place+1; %#ok
                     end
                 elseif sum(signal1) == 2
-                    for place = 1:(length(cellList.meshData{frame}{cellNum}.relint2)-(numPixelsMovingAverage-1));
+                    for place = 1:(length(cellList.meshData{frame}{cellNum}.relint2)-(numPixelsMovingAverage-1))
                         cellList.meshData{frame}{cellNum}.meshavg=[cellList.meshData{frame}{cellNum}.meshavg mean(cellList.meshData{frame}{cellNum}.relint2(place:(place+(numPixelsMovingAverage-1))))];
                         place=place+1; %#ok
                     end
@@ -908,8 +909,9 @@ switch descriptor
 			%using the maxima from above, a matrix consiting of zeros is created to be
 			%filled in by mesh intensities
 			relintarray1=zeros(max(maxsizelarray),maxCellNum);
-			maxsizel=max(maxsizelarray);
-			if maxCellLength > maxsizel;
+			relintarray2=zeros(max(maxsizelarray),maxCellNum);
+            maxsizel=max(maxsizelarray);
+			if maxCellLength > maxsizel
 			    maxCellLength = maxsizel;
 			end
 			maxsizel2 = ceil(maxsizel); if mod(maxsizel2,2)==0, maxsizel2=maxsizel2+1; end
@@ -986,12 +988,12 @@ switch descriptor
 					%%% A MOVING AVERAGE IS CALCULATED FOR EACH OF THE SEGMENTS TO FIND THE SINGLE BRIGHTEST SEGMENT AREA
 					cellList.meshData{frame}{cellNum}.meshavg=[];
                     if signal(1) == 1 && sum(signal) == 1
-                        for place = 1:(length(cellList.meshData{frame}{cellNum}.relint1)-(numPixelsMovingAverage-1));
+                        for place = 1:(length(cellList.meshData{frame}{cellNum}.relint1)-(numPixelsMovingAverage-1))
                             cellList.meshData{frame}{cellNum}.meshavg=[cellList.meshData{frame}{cellNum}.meshavg mean(cellList.meshData{frame}{cellNum}.relint1(place:(place+(numPixelsMovingAverage-1))))];
                             place=place+1; %#ok
                         end
                     elseif signal(2) == 1 && sum(signal) == 1
-                        for place = 1:(length(cellList.meshData{frame}{cellNum}.relint2)-(numPixelsMovingAverage-1));
+                        for place = 1:(length(cellList.meshData{frame}{cellNum}.relint2)-(numPixelsMovingAverage-1))
                             cellList.meshData{frame}{cellNum}.meshavg=[cellList.meshData{frame}{cellNum}.meshavg mean(cellList.meshData{frame}{cellNum}.relint2(place:(place+(numPixelsMovingAverage-1))))];
                             place=place+1; %#ok
                         end
@@ -1019,12 +1021,12 @@ switch descriptor
                         relintarray1(maxsizel2a-k:maxsizel2a+k,passed)=interpint1;
                     elseif signal(2) == 1 && sum(signal) == 1
                         interpint2 = interp1(temp(1:length(cellList.meshData{frame}{cellNum}.relint2)),cellList.meshData{frame}{cellNum}.relint2,-k:k,'linear','extrap');
-                        relintarray2(maxsizel2a-k:maxsizel2a+k,passed)=interpint2; %#ok<AGROW>
+                        relintarray2(maxsizel2a-k:maxsizel2a+k,passed)=interpint2;
                     elseif sum(signal) == 2
                         interpint1 = interp1(temp(1:length(cellList.meshData{frame}{cellNum}.relint1)),cellList.meshData{frame}{cellNum}.relint1,-k:k,'linear','extrap');
                         relintarray1(maxsizel2a-k:maxsizel2a+k,passed)=interpint1;
                         interpint2 = interp1(temp(1:length(cellList.meshData{frame}{cellNum}.relint2)),cellList.meshData{frame}{cellNum}.relint2,-k:k,'linear','extrap');
-                        relintarray2(maxsizel2a-k:maxsizel2a+k,passed)=interpint2; %#ok<AGROW>
+                        relintarray2(maxsizel2a-k:maxsizel2a+k,passed)=interpint2;
                     end
 					
 					cellLength=[cellLength cellList.meshData{frame}{cellNum}.length]; %#ok<AGROW>
@@ -1117,7 +1119,7 @@ switch descriptor
                     return;
                 end
                 maxsizel=max(sizelarray);
-                if maxCellLength > maxsizel;
+                if maxCellLength > maxsizel
                     maxCellLength = maxsizel;
                 end
                 %using the maxima from above, a (max X cell number)matrix consiting of zeros is created
