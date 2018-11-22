@@ -334,9 +334,9 @@ switch descriptor
                 y = repmat((1:size(lnumsort1,1)),size(lnumsort1,2)-2,1)';
                 dataToPlot = lnumsort1(1:end,3:end);
                 dataToPlot(dataToPlot==0) = NaN;
-                pcolor(x,y,flipud(dataToPlot)); colormap jet; colorbar;caxis([0 1]);shading flat;
-                xlabel('Distance From Midcell (\mum)','FontSize',18)
-                ylabel('Number of Cells','FontSize',18)
+                pcolor(flip(y),x,flipud(dataToPlot)); colormap gray; colorbar;shading flat; %;caxis([.8 1])
+                ylabel('Distance From Midcell (\mum)','FontSize',18)
+                xlabel('Number of Cells','FontSize',18)
             elseif signal(2) == 1 && sum(signal) == 1
                %relative intensities are plotted accoring to a colormap
         
@@ -345,9 +345,9 @@ switch descriptor
                 y = repmat((1:size(lnumsort2,1)),size(lnumsort2,2)-2,1)';
                 dataToPlot = lnumsort2(1:end,3:end);
                 dataToPlot(dataToPlot==0) = NaN;
-                pcolor(x,y,flipud(dataToPlot)); colormap jet; colorbar;caxis([0 1]);shading flat;
-                xlabel('Distance From Midcell (\mum)','FontSize',18)
-                ylabel('Number of Cells','FontSize',18)
+                pcolor(flip(y),x,flipud(dataToPlot)); colormap gray; colorbar;shading flat; %;caxis([.8 1])
+                ylabel('Distance From Midcell (\mum)','FontSize',18)
+                xlabel('Number of Cells','FontSize',18)
             elseif sum(signal) == 2
                 %relative intensities are plotted accoring to a colormap
             
@@ -356,7 +356,7 @@ switch descriptor
                 y = repmat((1:size(lnumsort1,1)),size(lnumsort1,2)-2,1)';
                 dataToPlot = lnumsort1(1:end,3:end);
                 dataToPlot(dataToPlot==0) = NaN;
-                pcolor(x,y,flipud(dataToPlot)); colormap jet; colorbar;caxis([0 1]);shading flat;
+                pcolor(x,y,flipud(dataToPlot)); colormap gray; colorbar;shading flat;
                 xlabel('Distance From Midcell (\mum)','FontSize',18)
                 ylabel('Number of Cells','FontSize',18)
                 %relative intensities are plotted accoring to a colormap
@@ -366,7 +366,7 @@ switch descriptor
                 y = repmat((1:size(lnumsort2,1)),size(lnumsort2,2)-2,1)';
                 dataToPlot = lnumsort2(1:end,3:end);
                 dataToPlot(dataToPlot==0) = NaN;
-                pcolor(x,y,flipud(dataToPlot)); colormap jet; colorbar;caxis([0 1]);shading flat;
+                pcolor(x,y,flipud(dataToPlot)); colormap gray; colorbar;caxis([0 1]);shading flat;
                 xlabel('Distance From Midcell (\mum)','FontSize',18)
                 ylabel('Number of Cells','FontSize',18)
             end
